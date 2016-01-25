@@ -11,6 +11,8 @@ import {
 	DESERIALIZE,
 	SERIALIZE
 } from 'state/action-types';
+import schema from './schema';
+import { isValidStateWithSchema } from 'state/utils';
 
 /**
  * Tracks all known user objects, indexed by user ID.
@@ -26,7 +28,7 @@ export function items( state = {}, action ) {
 				[ action.user.ID ]: action.user
 			} );
 		case DESERIALIZE:
-			return state;
+			return isValidStateWithSchema( state, schema ) ? state : {};
 		case SERIALIZE:
 			return state;
 	}

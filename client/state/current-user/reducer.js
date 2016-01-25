@@ -7,6 +7,8 @@ import { combineReducers } from 'redux';
  * Internal dependencies
  */
 import { CURRENT_USER_ID_SET, SERIALIZE, DESERIALIZE } from 'state/action-types';
+import { isValidStateWithSchema } from 'state/utils';
+import schema from './schema';
 
 /**
  * Tracks the current user ID.
@@ -23,7 +25,7 @@ export function id( state = null, action ) {
 		case SERIALIZE:
 			return state;
 		case DESERIALIZE:
-			return state;
+			return isValidStateWithSchema( state, schema ) ? state : null;
 	}
 
 	return state;

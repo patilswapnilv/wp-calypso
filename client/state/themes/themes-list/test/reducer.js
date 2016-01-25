@@ -3,6 +3,7 @@
  */
 import { expect } from 'chai';
 import { fromJS } from 'immutable';
+import sinon from 'sinon';
 
 /**
  * Internal dependencies
@@ -15,6 +16,14 @@ import reducer, { initialState, query } from '../reducer';
 
 describe( 'themes-last-query reducer', () => {
 	describe( 'persistence', () => {
+		var consoleStub;
+		before( () => {
+			consoleStub = sinon.stub( console, 'warn' );
+		} );
+		after( () => {
+			consoleStub.restore();
+		} );
+
 		it( 'persists state and converts to a plain JS object', () => {
 			const jsObject = Object.freeze( {
 				list: [ 'one', 'two', 'three' ],
@@ -57,7 +66,7 @@ describe( 'themes-last-query reducer', () => {
 			expect( state ).to.eql( query( fromJS( jsObject ) ) );
 		} );
 
-		it.skip( 'should ignore loading data with invalid keys ', () => {
+		it( 'should ignore loading data with invalid keys ', () => {
 			const jsObject = Object.freeze( {
 				foobar: [ 'one', 'two', 'three' ],
 				nextId: 2,
@@ -78,7 +87,7 @@ describe( 'themes-last-query reducer', () => {
 			expect( state ).to.eql( initialState );
 		} );
 
-		it.skip( 'should ignore loading data with invalid values ', () => {
+		it( 'should ignore loading data with invalid values ', () => {
 			const jsObject = Object.freeze( {
 				list: [ 'one', 'two', 'three' ],
 				nextId: 2,

@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { expect } from 'chai';
+import sinon from 'sinon';
 
 /**
  * Internal dependencies
@@ -62,6 +63,14 @@ describe( 'reducer', () => {
 		} );
 
 		describe( 'persistence', () => {
+			var consoleStub;
+			before( () => {
+				consoleStub = sinon.stub( console, 'warn' );
+			} );
+			after( () => {
+				consoleStub.restore();
+			} );
+
 			it( 'persists state', () => {
 				const state = Object.freeze( {
 					73705554: {
@@ -118,7 +127,7 @@ describe( 'reducer', () => {
 				expect( state ).to.eql( persistedState );
 			} );
 
-			it.skip( 'should ignore loading data with invalid keys ', () => {
+			it( 'should ignore loading data with invalid keys ', () => {
 				const persistedState = Object.freeze( {
 					foo: {
 						ID: 73705554,
@@ -146,7 +155,7 @@ describe( 'reducer', () => {
 				expect( state ).to.eql( {} );
 			} );
 
-			it.skip( 'should ignore loading data with invalid values ', () => {
+			it( 'should ignore loading data with invalid values ', () => {
 				const persistedState = Object.freeze( {
 					foo: {
 						ID: 73705554,

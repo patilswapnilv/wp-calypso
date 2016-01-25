@@ -3,6 +3,7 @@
  */
 import { expect } from 'chai';
 import { fromJS } from 'immutable';
+import sinon from 'sinon';
 
 /**
  * Internal dependencies
@@ -15,6 +16,14 @@ import reducer, { initialState } from '../reducer';
 
 describe( 'themes reducer', () => {
 	describe( 'persistence', () => {
+		var consoleStub;
+		before( () => {
+			consoleStub = sinon.stub( console, 'warn' );
+		} );
+		after( () => {
+			consoleStub.restore();
+		} );
+
 		it( 'persists state and converts to a plain JS object', () => {
 			const jsObject = Object.freeze( {
 				currentSiteId: 12345678,
@@ -45,7 +54,7 @@ describe( 'themes reducer', () => {
 			const persistedState = reducer( state, { type: SERIALIZE } );
 			expect( persistedState ).to.eql( jsObject );
 		} );
-		it( 'loads persisted state and converts to immutable.js object', () => {
+		it( 'loads valid persisted state and converts to immutable.js object', () => {
 			const jsObject = Object.freeze( {
 				currentSiteId: 12345678,
 				themes: {
@@ -75,7 +84,7 @@ describe( 'themes reducer', () => {
 			expect( state ).to.eql( fromJS( jsObject ) );
 		} );
 
-		it.skip( 'should ignore loading data with invalid keys ', () => {
+		it( 'should ignore loading data with invalid keys ', () => {
 			const jsObject = Object.freeze( {
 				currentSiteId: 12345678,
 				wrongkey: {
@@ -105,7 +114,7 @@ describe( 'themes reducer', () => {
 			expect( state ).to.eql( initialState );
 		} );
 
-		it.skip( 'should ignore loading data with invalid values ', () => {
+		it( 'should ignore loading data with invalid values ', () => {
 			const jsObject = Object.freeze( {
 				currentSiteId: 12345678,
 				themes: {

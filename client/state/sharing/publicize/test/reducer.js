@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { expect } from 'chai';
+import sinon from 'sinon';
 
 /**
  * Internal dependencies
@@ -48,6 +49,14 @@ describe( '#fetchingConnections()', () => {
 	} );
 
 	describe( 'persistence', () => {
+		var consoleStub;
+		before( () => {
+			consoleStub = sinon.stub( console, 'warn' );
+		} );
+		after( () => {
+			consoleStub.restore();
+		} );
+
 		it( 'should load valid persisted data', () => {
 			const persistedState = Object.freeze( {
 				2916284: false,
@@ -59,7 +68,7 @@ describe( '#fetchingConnections()', () => {
 			expect( state ).to.eql( { 2916284: false, 123456: undefined } );
 		} );
 
-		it.skip( 'should ignore loading data with invalid keys', () => {
+		it( 'should ignore loading data with invalid keys', () => {
 			const persistedState = Object.freeze( { foo: false } );
 			const state = fetchingConnections( persistedState, {
 				type: DESERIALIZE
@@ -67,7 +76,7 @@ describe( '#fetchingConnections()', () => {
 			expect( state ).to.eql( {} );
 		} );
 
-		it.skip( 'should ignore loading data with invalid values', () => {
+		it( 'should ignore loading data with invalid values', () => {
 			const persistedState = Object.freeze( { 2916284: 'foo' } );
 			const state = fetchingConnections( persistedState, {
 				type: DESERIALIZE
@@ -138,6 +147,14 @@ describe( '#connections()', () => {
 	} );
 
 	describe( 'persistence', () => {
+		var consoleStub;
+		before( () => {
+			consoleStub = sinon.stub( console, 'warn' );
+		} );
+		after( () => {
+			consoleStub.restore();
+		} );
+
 		it( 'should persist data', () => {
 			const state = Object.freeze( {
 				1: { ID: 1, site_ID: 2916284 },
@@ -158,7 +175,7 @@ describe( '#connections()', () => {
 			expect( state ).to.eql( persistedState );
 		} );
 
-		it.skip( 'should ignore loading data with invalid keys', () => {
+		it( 'should ignore loading data with invalid keys', () => {
 			const persistedState = Object.freeze( {
 				foo: { ID: 1, site_ID: 2916284 },
 				bar: { ID: 2, site_ID: 2916284 }
@@ -169,7 +186,7 @@ describe( '#connections()', () => {
 			expect( state ).to.eql( {} );
 		} );
 
-		it.skip( 'should ignore loading data with invalid values', () => {
+		it( 'should ignore loading data with invalid values', () => {
 			const persistedState = Object.freeze( {
 				1: { ID: 1, site_ID: 'foo' },
 				2: { ID: 2, site_ID: 2916284 }
@@ -238,6 +255,14 @@ describe( '#connectionsBySiteId()', () => {
 	} );
 
 	describe( 'persistence', () => {
+		var consoleStub;
+		before( () => {
+			consoleStub = sinon.stub( console, 'warn' );
+		} );
+		after( () => {
+			consoleStub.restore();
+		} );
+
 		it( 'should persist data', () => {
 			const state = Object.freeze( {
 				77203074: [ 1, 2 ],
@@ -258,7 +283,7 @@ describe( '#connectionsBySiteId()', () => {
 			expect( state ).to.eql( persistedState );
 		} );
 
-		it.skip( 'should ignore loading data with invalid keys', () => {
+		it( 'should ignore loading data with invalid keys', () => {
 			const persistedState = Object.freeze( {
 				77203074: [ 1, 2 ],
 				foo: [ 1 ]
@@ -269,7 +294,7 @@ describe( '#connectionsBySiteId()', () => {
 			expect( state ).to.eql( {} );
 		} );
 
-		it.skip( 'should ignore loading data with invalid values', () => {
+		it( 'should ignore loading data with invalid values', () => {
 			const persistedState = Object.freeze( {
 				77203074: [ 1, 'bar' ],
 				2916284: [ 1 ]
