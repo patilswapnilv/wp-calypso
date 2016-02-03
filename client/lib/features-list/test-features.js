@@ -74,10 +74,6 @@ const features = {
 			planSpecific: false
 		},
 		{
-			text: 'eCommerce',
-			planSpecific: true
-		},
-		{
 			text: 'Unlimited Premium Themes',
 			planSpecific: true
 		},
