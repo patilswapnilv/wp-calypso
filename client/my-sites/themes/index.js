@@ -39,5 +39,7 @@ module.exports = function() {
 	if ( config.isEnabled( 'manage/themes' ) ) {
 		const { routes, middlewares } = getRouting( user.get() );
 		routes.forEach( route => page( route, ...middlewares ) );
+
+		page( '/themes/:slug', themesController.details );
 	}
 };
