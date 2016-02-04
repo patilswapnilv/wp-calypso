@@ -69,7 +69,6 @@ var controller = {
 	},
 
 	details: function( context ) {
-		context.store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
 		const user = getCurrentUser( context.store.getState() );
 		const Head = user
 			? require( 'layout/head' )
