@@ -1,6 +1,6 @@
 [
   "env",
-  "tracks_client_prop",
+  "client_prop",
   "hostname",
   "wpcom_user_bootstrap",
   "oauth_response_type",
