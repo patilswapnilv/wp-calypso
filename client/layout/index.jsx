@@ -153,6 +153,10 @@ Layout = React.createClass( {
 			sectionClass += ' has-no-sidebar';
 		}
 
+		if ( this.props.isFullScreen ) {
+			sectionClass += ' full-screen';
+		}
+
 		return (
 			<div className={ sectionClass }>
 				{ config.isEnabled( 'keyboard-shortcuts' ) ? <KeyboardShortcutsMenu /> : null }
@@ -178,12 +182,13 @@ Layout = React.createClass( {
 
 export default connect(
 	( state ) => {
-		const { isLoading, section, hasSidebar, chunkName } = state.ui;
+		const { isLoading, section, hasSidebar, isFullScreen, chunkName } = state.ui;
 		return {
 			isLoading,
 			isSupportUser: isSupportUser( state ),
 			section,
 			hasSidebar,
+			isFullScreen,
 			chunkName,
 			isOffline: isOffline( state )
 		};
