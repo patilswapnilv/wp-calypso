@@ -15,7 +15,7 @@ var Accordion = require( 'components/accordion' ),
 	CategoryListData = require( 'components/data/category-list-data' ),
 	TagListData = require( 'components/data/tag-list-data' ),
 	FeaturedImage = require( 'post-editor/editor-featured-image' ),
-	EditorSharingContainer = require( 'post-editor/editor-sharing/container' ),
+	EditorSharingAccordion = require( 'post-editor/editor-sharing/accordion' ),
 	FormTextarea = require( 'components/forms/form-textarea' ),
 	PostFormatsData = require( 'components/data/post-formats-data' ),
 	PostFormatsAccordion = require( 'post-editor/editor-post-formats/accordion' ),
@@ -120,7 +120,11 @@ var EditorDrawer = React.createClass( {
 	},
 
 	renderSharing: function() {
-		return <EditorSharingContainer />;
+		return (
+			<EditorSharingAccordion
+				post={ this.props.post }
+				isNew={ this.props.isNew } />
+		);
 	},
 
 	renderFeaturedImage: function() {
