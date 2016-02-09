@@ -2,6 +2,7 @@
  * External dependencies
  */
 import range from 'lodash/utility/range';
+import values from 'lodash/object/values';
 
 /**
  * Internal dependencies
@@ -38,6 +39,23 @@ export function getSitePost( state, siteId, postId ) {
 	}
 
 	return getPost( state, sitePosts[ siteId ][ postId ] );
+}
+
+/**
+ * Returns an array of post objects by site ID.
+ *
+ * @param  {Object} state  Global state tree
+ * @param  {Number} siteId Site ID
+ * @return {?Array}         Site posts
+ */
+export function getSitePosts( state, siteId ) {
+	const { sitePosts } = state.posts;
+	if ( ! sitePosts[ siteId ] ) {
+		return null;
+	}
+
+	const globalIds = values( sitePosts[ siteId ] );
+	return globalIds.map( ( globalId ) => getPost( state, globalId ) );
 }
 
 /**
