@@ -71,10 +71,6 @@ var controller = {
 	details: function( context ) {
 		const user = getCurrentUser( context.store.getState() );
 
-		if ( ! user ) { // bail if we're logged out
-			return null;
-		}
-
 		const Head = user
 			? require( 'layout/head' )
 			: require( 'my-sites/themes/head' );
@@ -89,7 +85,9 @@ var controller = {
 
 		console.log( 'running ze details controller' );
 
-		ReactDom.render( element, document.getElementById( 'primary' ) );
+		if ( true ) { // bail if we're logged out
+			ReactDom.render( element, document.getElementById( 'primary' ) );
+		}
 
 		return element;
 	}

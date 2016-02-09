@@ -24,7 +24,7 @@ const routing = {
 	middlewares: [
 		{ value: ( context, next ) => {
 			context.store.dispatch( setSection( 'design', { hasSidebar: !! user.get(), isFullScreen: false } ) );
-			setTimeout( next, 1 );
+			next();
 		}, enableLoggedOut: true },
 		{ value: controller.navigation, enableLoggedOut: false },
 		{ value: controller.siteSelection, enableLoggedOut: false },
