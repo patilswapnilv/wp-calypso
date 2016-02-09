@@ -18,6 +18,7 @@ var config = require( 'config' ),
 	utils = require( 'bundler/utils' ),
 	sections = require( '../../client/sections' ),
 	LayoutLoggedOutDesign = require( 'layout/logged-out-design' ),
+	ThemeSheetComponent = require( 'my-sites/themes/sheet' ).ThemeSheet,
 	createReduxStore = require( 'state' ).createReduxStore,
 	setSection = require( 'state/ui/actions' ).setSection;
 
@@ -381,6 +382,23 @@ module.exports = function() {
 		} else {
 			renderLoggedOutRoute( req, res );
 		}
+	} );
+
+	app.get( '/themes/:theme_slug', function( req, res ) {
+		const context = getDefaultContext( req );
+		const Head = require( 'my-sites/themes/head' );
+		const store = createReduxStore();
+		const primary = (
+				<Head title="A theme">
+					<ThemeSheetComponent themeSlug={ req.params.theme_slug } />
+				</Head>
+		);
+
+		store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+		context.initialReduxState = pick( store.getState(), 'ui' );
+		context.layout = ReactDomServer.renderToString( LayoutLoggedOutDesignFactory( { store, primary } ) );
+
+		res.render( 'index.jade', context );
 	} );
 
 	app.get( '/design(/type/:themeTier)?', function( req, res ) {

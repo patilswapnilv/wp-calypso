@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import MasterbarMinimal from 'layout/masterbar/minimal';
 import ThemesHead from 'my-sites/themes/head';
 
-const LayoutLoggedOutDesign = ( { section, hasSidebar, isFullScreen, tier = 'all' } ) => {
+const LayoutLoggedOutDesign = ( { section, hasSidebar, isFullScreen, tier = 'all', primary = null } ) => {
 	const sectionClass = section ? 'is-section-' + section : '';
 	const classes = classNames( 'wp', sectionClass, {
 		'has-no-sidebar': ! hasSidebar,
@@ -25,7 +25,9 @@ const LayoutLoggedOutDesign = ( { section, hasSidebar, isFullScreen, tier = 'all
 			<ThemesHead tier={ tier } />
 			<MasterbarMinimal url="/" />
 			<div id="content" className="wp-content">
-				<div id="primary" className="wp-primary wp-section" />
+				<div id="primary" className="wp-primary wp-section">
+					{ primary }
+				</div>
 				<div id="secondary" className="wp-secondary" />
 			</div>
 			<div id="tertiary" className="wp-overlay fade-background" />

@@ -69,19 +69,26 @@ var controller = {
 	},
 
 	details: function( context ) {
+		console.log( 'running ze details controller' );
 		const user = getCurrentUser( context.store.getState() );
 		const Head = user
 			? require( 'layout/head' )
 			: require( 'my-sites/themes/head' );
 
-		ReactDom.render(
-			React.createElement( ReduxProvider, { store: context.store },
-				React.createElement( Head, { title: 'A theme' },
-					React.createElement( ThemeSheetComponent, { themeSlug: context.params.slug } )
-				)
-			),
-			document.getElementById( 'primary' )
+		const element = (
+			<ReduxProvider store={ context.store } >
+				<Head title="A theme">
+					<ThemeSheetComponent themeSlug={ context.params.slug } />
+				</Head>
+			</ReduxProvider>
 		);
+
+		if ( document.getElementById( 'primary' ).length === 0 ) {
+			console.log( 'somehow this is empty, so replacing' );
+			ReactDom.render( element, document.getElementById( 'primary' ) );
+		}
+
+		return element;
 	}
 
 };
