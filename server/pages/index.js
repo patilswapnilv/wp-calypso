@@ -386,17 +386,11 @@ module.exports = function() {
 
 	app.get( '/themes/:theme_slug', function( req, res ) {
 		const context = getDefaultContext( req );
-		const Head = require( 'my-sites/themes/head' );
 		const store = createReduxStore();
-		const primary = (
-				<Head title="A theme">
-					<ThemeSheetComponent themeSlug={ req.params.theme_slug } />
-				</Head>
-		);
 
 		store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
 		context.initialReduxState = pick( store.getState(), 'ui' );
-		context.layout = ReactDomServer.renderToString( LayoutLoggedOutDesignFactory( { store, primary } ) );
+		context.layout = ReactDomServer.renderToString( LayoutLoggedOutDesignFactory( { store, routeName: 'themes', match: { theme_slug: req.params.theme_slug } } ) );
 
 		res.render( 'index.jade', context );
 	} );
