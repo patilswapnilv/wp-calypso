@@ -69,8 +69,12 @@ var controller = {
 	},
 
 	details: function( context ) {
-		console.log( 'running ze details controller' );
 		const user = getCurrentUser( context.store.getState() );
+
+		if ( ! user ) { // bail if we're logged out
+			return null;
+		}
+
 		const Head = user
 			? require( 'layout/head' )
 			: require( 'my-sites/themes/head' );
@@ -83,10 +87,9 @@ var controller = {
 			</ReduxProvider>
 		);
 
-		if ( document.getElementById( 'primary' ).length === 0 ) {
-			console.log( 'somehow this is empty, so replacing' );
-			ReactDom.render( element, document.getElementById( 'primary' ) );
-		}
+		console.log( 'running ze details controller' );
+
+		ReactDom.render( element, document.getElementById( 'primary' ) );
 
 		return element;
 	}

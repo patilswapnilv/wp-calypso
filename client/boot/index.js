@@ -10,6 +10,7 @@ var React = require( 'react' ),
 	debug = require( 'debug' )( 'calypso' ),
 	page = require( 'page' ),
 	url = require( 'url' ),
+	Path = require( 'path-parser' ),
 	qs = require( 'querystring' ),
 	injectTapEventPlugin = require( 'react-tap-event-plugin' ),
 	createReduxStoreFromPersistedInitialState = require( 'state/initial-state' ).default;
@@ -185,14 +186,26 @@ function reduxStoreReady( reduxStore ) {
 	} else {
 		analytics.setSuperProps( superProps );
 
-		if ( startsWith( window.location.pathname, '/design' ) ) {
+		let props = {};
+
+		const themesRoutes = [
+			{ name: 'design', path: new Path( '/design' ) },
+			{ name: 'themes', path: new Path( '/themes/:theme_slug' ) },
+		];
+
+		const matchedRoutes = themesRoutes
+			.map( r => ( Object.assign( {}, r, { match: r.path.partialMatch( window.location.pathname ) } ) ) )
+			.filter( r => r.match !== null );
+
+
+		if ( matchedRoutes.length ) {
+			props = { routeName: matchedRoutes[0].name, match: matchedRoutes[0].match };
 			Layout = require( 'layout/logged-out-design' );
-			layoutElement = React.createElement( Layout );
-		} else {
-			layoutElement = React.createElement( Layout, {
-				focus: layoutFocus
-			} );
 		}
+
+		layoutElement = React.createElement( Layout, Object.assign( {}, props, {
+			focus: layoutFocus
+		} ) );
 	}
 
 	if ( config.isEnabled( 'perfmon' ) ) {
