@@ -397,7 +397,7 @@ module.exports = function() {
 				try {
 					const store = createReduxStore();
 					store.dispatch( setSection( 'design', { hasSidebar: false } ) );
-					context.initialReduxState = pick( store.getState(), 'ui' );
+					context.initialReduxState = store.getState();
 
 					if ( ! cachedDesignMarkup[ tier ] ) {
 						const cached = cachedDesignMarkup[ tier ] = {};
