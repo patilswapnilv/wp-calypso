@@ -86,6 +86,8 @@ export default React.createClass( {
 				status = 'is-error';
 			} else if ( -1 < value.indexOf( 'success' ) ) {
 				status = 'is-success';
+			} else if ( -1 < value.indexOf( 'pending' ) ) {
+				status = 'is-validating';
 			}
 		}
 
