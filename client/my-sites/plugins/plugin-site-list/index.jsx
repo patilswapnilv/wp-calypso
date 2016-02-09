@@ -26,9 +26,9 @@ module.exports = React.createClass( {
 
 	getSecondaryPluginSites: function( site ) {
 		let secondarySites = allSites.getNetworkSites( site );
-		let secondaryPluginSites = site.plugin ?
-			PluginsStore.getSites( secondarySites, this.props.plugin.slug ) :
-			secondarySites;
+		let secondaryPluginSites = site.plugin
+			? PluginsStore.getSites( secondarySites, this.props.plugin.slug )
+			: secondarySites;
 		return compact( secondaryPluginSites );
 	},
 
@@ -38,7 +38,6 @@ module.exports = React.createClass( {
 				site={ site }
 				secondarySites={ this.getSecondaryPluginSites( site ) }
 				plugin={ this.props.plugin }
-				wporg={ this.props.wporg }
 				notices={ this.props.notices } />;
 	},
 

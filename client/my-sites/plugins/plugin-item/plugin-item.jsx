@@ -128,14 +128,6 @@ module.exports = React.createClass( {
 			return this.renderUpdateFlag();
 		}
 
-		if ( pluginData.wpcom ) {
-			return (
-				<div className="plugin-item__last_updated">
-					{ this.translate( 'Updated Automatically' ) }
-				</div>
-			);
-		}
-
 		if ( pluginData.last_updated ) {
 			return (
 				<div className="plugin-item__last_updated">
@@ -171,8 +163,7 @@ module.exports = React.createClass( {
 					plugin={ this.props.plugin }
 					disabled={ this.props.isSelectable }
 					site={ this.props.selectedSite }
-					notices={ this.props.notices }
-					wporg={ !! this.props.plugin.wporg } />
+					notices={ this.props.notices } />
 			</div>
 		);
 	},
