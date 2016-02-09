@@ -16,7 +16,7 @@ export const ThemeSheet = React.createClass( {
 	displayName: 'ThemeSheet',
 
 	propTypes: {
-		themeSlug: React.PropTypes.object,
+		themeSlug: React.PropTypes.string,
 	},
 
 	render() {

@@ -17,7 +17,8 @@ import ThemeSheetComponent from 'my-sites/themes/sheet';
 const LayoutLoggedOutDesign = ( { routeName, match, section, hasSidebar, isFullScreen, tier = 'all' } ) => {
 	const primary = routeName === 'themes' ? <ThemeSheetComponent themeSlug={ match.theme_slug } /> : null;
 	const sectionClass = section ? 'is-section-' + section : '';
-	const classes = classNames( 'wp', sectionClass, {
+	const classes = classNames( 'wp layout', sectionClass, {
+		'focus-content': true,
 		'has-no-sidebar': ! hasSidebar,
 		'full-screen': isFullScreen,
 	} );

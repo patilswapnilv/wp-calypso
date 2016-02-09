@@ -84,8 +84,8 @@ var controller = {
 		);
 
 		console.log( 'running ze details controller' );
-
-		if ( true ) { // bail if we're logged out
+		const sheetsDomElement = document.getElementsByClassName( 'themes__sheet' )[0];
+		if ( ! sheetsDomElement ) {
 			ReactDom.render( element, document.getElementById( 'primary' ) );
 		}
 
