@@ -9,6 +9,7 @@ var express = require( 'express' ),
 	superagent = require( 'superagent' ),
 	includes = require( 'lodash/collection/includes' ),
 	React = require( 'react' ),
+	ReduxProvider = require( 'react-redux' ).Provider,
 	ReactDomServer = require( 'react-dom/server' ),
 	Helmet = require( 'react-helmet' ),
 	pick = require( 'lodash/object/pick' );
@@ -18,7 +19,6 @@ var config = require( 'config' ),
 	utils = require( 'bundler/utils' ),
 	sections = require( '../../client/sections' ),
 	LayoutLoggedOutDesign = require( 'layout/logged-out-design' ),
-	ThemeSheetComponent = require( 'my-sites/themes/sheet' ).ThemeSheet,
 	createReduxStore = require( 'state' ).createReduxStore,
 	setSection = require( 'state/ui/actions' ).setSection;
 
@@ -390,7 +390,11 @@ module.exports = function() {
 
 		store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
 		context.initialReduxState = pick( store.getState(), 'ui' );
-		context.layout = ReactDomServer.renderToString( LayoutLoggedOutDesignFactory( { store, routeName: 'themes', match: { theme_slug: req.params.theme_slug } } ) );
+		context.layout = ReactDomServer.renderToString( (
+			<ReduxProvider store={ store }>
+				<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+			</ReduxProvider>
+		) );
 
 		res.render( 'index.jade', context );
 	} );
