@@ -9,6 +9,7 @@ import debugFactory from 'debug';
 /**
  * Internal dependencies
  */
+import * as OAuthToken from 'lib/oauth-token';
 import Undocumented from './lib/undocumented';
 
 const debug = debugFactory( 'calypso:wpcom-undocumented' );
@@ -29,18 +30,19 @@ function WPCOMUndocumented( token, reqHandler ) {
 	if ( 'function' === typeof token ) {
 		reqHandler = token;
 		token = null;
-	} else {
-		this.loadToken( token );
+	} else if ( token ) {
+		OAuthToken.setToken( token );
 	}
 
 	wpcomFactory.call( this, token, function( params, fn ) {
-		if ( this.isTokenLoaded() ) {
+		var authToken = OAuthToken.getToken();
+		if ( authToken ) {
 			// authToken is used in wpcom-xhr-request,
 			// which is used for the signup flow in the REST Proxy
 			params = assign(
 				{},
 				params,
-				{ authToken: this._token, token: this._token }
+				{ authToken: authToken, token: authToken }
 			);
 		}
 

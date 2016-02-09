@@ -277,6 +277,7 @@ const Signup = React.createClass( {
 	},
 
 	loginForm() {
+		return null;
 		return this.state.bearerToken ?
 			<WpcomLoginForm
 				authorization={ 'Bearer ' + this.state.bearerToken }
