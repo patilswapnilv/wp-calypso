@@ -390,7 +390,7 @@ BusinessPlanDetails = React.createClass( {
 				<PurchaseDetail
 					additionalClass="connect-google-analytics"
 					title={ this.translate( 'Integrate Google Analytics' ) }
-					description={ this.translate( 'Connect your WordPress.com site to your existing Google Analytics account.' ) }
+					description={ this.translate( 'Connect your site to your existing Google Analytics account.' ) }
 					buttonText={ this.translate( 'Connect Google Analytics' ) }
 					onButtonClick={ goToExternalPage( '/settings/analytics/' + this.props.selectedSite.slug ) } />
 			</ul>
