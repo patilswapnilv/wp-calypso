@@ -77,7 +77,7 @@ var controller = {
 
 		const element = (
 			<ReduxProvider store={ context.store } >
-				<Head title="A theme">
+				<Head title="Something Theme — WordPress.com" isSheet>
 					<ThemeSheetComponent themeSlug={ context.params.slug } />
 				</Head>
 			</ReduxProvider>

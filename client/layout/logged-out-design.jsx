@@ -25,7 +25,7 @@ const LayoutLoggedOutDesign = ( { routeName, match, section, hasSidebar, isFullS
 
 	return (
 		<div className={ classes }>
-			<ThemesHead tier={ tier } />
+			<ThemesHead tier={ tier } isSheet={ routeName === 'themes' } />
 			<MasterbarMinimal url="/" />
 			<div id="content" className="wp-content">
 				<div id="primary" className="wp-primary wp-section">
