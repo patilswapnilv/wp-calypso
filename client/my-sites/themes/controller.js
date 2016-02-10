@@ -83,7 +83,7 @@ var controller = {
 			</ReduxProvider>
 		);
 
-		console.log( 'running ze details controller' );
+		// FIXME: temporary hack until we have a proper isomorphic, one tree routing solution. Do NOT do this!
 		const sheetsDomElement = document.getElementsByClassName( 'themes__sheet' )[0];
 		if ( ! sheetsDomElement ) {
 			ReactDom.render( element, document.getElementById( 'primary' ) );

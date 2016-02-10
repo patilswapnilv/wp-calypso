@@ -23,8 +23,6 @@ const LayoutLoggedOutDesign = ( { routeName, match, section, hasSidebar, isFullS
 		'full-screen': isFullScreen,
 	} );
 
-	console.log( 'ROUTE NAME', routeName, 'ROUTE MATCH', match );
-
 	return (
 		<div className={ classes }>
 			<ThemesHead tier={ tier } />
