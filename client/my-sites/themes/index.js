@@ -46,10 +46,12 @@ module.exports = function() {
 		const { routes, middlewares } = getRouting( user.get() );
 		routes.forEach( route => page( route, ...middlewares ) );
 
-		page( '/themes/:slug/:site_id?', ( context, next ) => {
-			context.store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
-			ReactDom.unmountComponentAtNode( document.getElementById( 'secondary' ) );
-			next();
-		}, themesController.details );
+		if ( config.isEnabled( 'manage/themes/details' ) ) {
+			page( '/themes/:slug/:site_id?', ( context, next ) => {
+				context.store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+				ReactDom.unmountComponentAtNode( document.getElementById( 'secondary' ) );
+				next();
+			}, themesController.details );
+		}
 	}
 };

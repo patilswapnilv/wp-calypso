@@ -384,20 +384,22 @@ module.exports = function() {
 		}
 	} );
 
-	app.get( '/themes/:theme_slug', function( req, res ) {
-		const context = getDefaultContext( req );
-		const store = createReduxStore();
+	if ( config.isEnabled( 'manage/themes/details' ) ) {
+		app.get( '/themes/:theme_slug', function( req, res ) {
+			const context = getDefaultContext( req );
+			const store = createReduxStore();
 
-		store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
-		context.initialReduxState = pick( store.getState(), 'ui' );
-		context.layout = ReactDomServer.renderToString( (
-			<ReduxProvider store={ store }>
-				<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
-			</ReduxProvider>
-		) );
+			store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+			context.initialReduxState = pick( store.getState(), 'ui' );
+			context.layout = ReactDomServer.renderToString( (
+				<ReduxProvider store={ store }>
+					<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+				</ReduxProvider>
+			) );
 
-		res.render( 'index.jade', context );
-	} );
+			res.render( 'index.jade', context );
+		} );
+	}
 
 	app.get( '/design(/type/:themeTier)?', function( req, res ) {
 		if ( req.cookies.wordpress_logged_in || ! config.isEnabled( 'manage/themes/logged-out' ) ) {
