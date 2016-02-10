@@ -68,6 +68,7 @@ export default React.createClass( {
 	},
 
 	toggleExpand() {
+		event.stopPropagation();
 		this.setState( {
 			updateError: false,
 			updateSucceed: false,
