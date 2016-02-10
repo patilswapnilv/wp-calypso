@@ -1,8 +1,7 @@
 /**
  * External dependencies
  */
-var page = require( 'page' ),
-	transform = require( 'lodash/object/transform' );
+var page = require( 'page' );
 
 /**
  * Internal dependencies
@@ -12,32 +11,25 @@ var config = require( 'config' ),
 	controller = require( 'my-sites/controller' ),
 	themesController = require( './controller' );
 
-const routing = {
-	routes: [
-		{ value: '/design/:site_id', enableLoggedOut: false },
-		{ value: '/design/type/:tier/:site_id', enableLoggedOut: false },
-		{ value: '/design/type/:tier', enableLoggedOut: true },
-		{ value: '/design', enableLoggedOut: true },
-	],
-	middlewares: [
-		{ value: controller.navigation, enableLoggedOut: false },
-		{ value: controller.siteSelection, enableLoggedOut: false },
-		{ value: themesController.themes, enableLoggedOut: true },
-	]
-};
-
-function getRouting( isLoggedIn ) {
-	const testKey = isLoggedIn ? 'value' : 'enableLoggedOut';
-	return transform( routing, ( acc, collection, collectionName ) => {
-		acc[ collectionName ] = collection
-			.filter( item => item[ testKey ] )
-			.map( item => item.value );
-	} );
-}
+const isLoggedIn = !! user.get();
+const routes = isLoggedIn
+	? {
+		'/design/*': [ controller.navigation, controller.siteSelection ],
+		'/design(/type/:tier)?': [ themesController.multiSite ],
+		'/design/:siteId(/type/:tier)?': [ themesController.singleSite ],
+	}
+	: {
+		'/design(/type/:tier)?': [ themesController.loggedOut ]
+	};
+// TODO: Append 'themes/' routes that are the same for both logged in and out:
+//'themes': [ themesController.something ]
+//'/theme/:name': [ themesController.details ]
 
 module.exports = function() {
 	if ( config.isEnabled( 'manage/themes' ) ) {
-		const { routes, middlewares } = getRouting( user.get() );
-		routes.forEach( route => page( route, ...middlewares ) );
+		// Does iterating over Object.keys preserve order? If it doesn't, use lodash's mapValues
+		Object.keys( routes ).forEach( route => {
+			page( route, ...routes[ route ] );
+		} )
 	}
 };
