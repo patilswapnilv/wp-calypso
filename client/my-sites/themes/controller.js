@@ -19,7 +19,7 @@ import buildTitle from 'lib/screen-title/utils';
 import { getAnalyticsData } from './helpers';
 import ClientSideEffects from './client-side-effects';
 
-export function themes( context ) {
+export function themes( context, next ) {
 	const { tier, site_id } = context.params;
 	const user = getCurrentUser( context.store.getState() );
 	const title = buildTitle(
@@ -55,7 +55,7 @@ export function themes( context ) {
 		);
 	};
 
-	ReactDom.render(
+	context.primary =
 		<ReduxProvider store={ context.store }>
 			<Head title={ title } tier={ tier || 'all' }>
 				<ThemesComponent
@@ -68,7 +68,15 @@ export function themes( context ) {
 					{ runClientAnalytics }
 				</ClientSideEffects>
 			</Head>
-		</ReduxProvider>,
+		</ReduxProvider>;
+
+	next();
+}
+
+export function render( context, next ) {
+	ReactDom.render(
+		context.primary,
 		document.getElementById( 'primary' )
 	);
+	next();
 }
