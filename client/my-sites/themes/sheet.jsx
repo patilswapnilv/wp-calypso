@@ -22,9 +22,9 @@ export const ThemeSheet = React.createClass( {
 	render() {
 		return (
 			<Main className="themes__sheet">
-				<div id="sub-bar">
-					<span id="sub-bar-title">Pineapple Fifteen</span>
-					<span id="sub-bar-tag">by Alpha and Omega</span>
+				<div className="themes__sheet-bar">
+					<span className="themes__sheet-bar-title">Pineapple Fifteen</span>
+					<span className="themes__sheet-bar-tag">by Alpha and Omega</span>
 				</div>
 			</Main>
 		);

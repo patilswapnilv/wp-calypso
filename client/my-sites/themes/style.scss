@@ -69,31 +69,32 @@
 
 .themes__sheet {
 	max-width: none;
+}
 
-	#sub-bar {
-		background-color: #0087be;
-		color: white;
-		height: 180px;
-		padding: 0;
-		margin: 0;
+.themes__sheet-bar
+{
+	background-color: #0087be;
+	color: white;
+	height: 180px;
+	padding: 0;
+	margin: 0;
+}
 
-	}
+.themes__sheet-bar-title {
+	display: block;
+	font-size: 33px;
+	font-weight: 100;
+	padding-top: 70px;
+	padding-left: 25px;
+	line-height: 1;
+}
 
-	#sub-bar-title {
-		display: block;
-		font-size: 33px;
-		font-weight: 100;
-		padding-top: 70px;
-		padding-left: 25px;
-		line-height: 1;
-	}
-
-	#sub-bar-tag {
-		display: block;
-		color: rgba(255, 255, 255, 0.6);
-		font-size: 16px;
-		font-weight: 200;
-		padding-top: 5px;
-		padding-left: 25px
-	}
+.themes__sheet-bar-tag {
+	max-width: none;
+	display: block;
+	color: rgba(255, 255, 255, 0.6);
+	font-size: 16px;
+	font-weight: 200;
+	padding-top: 5px;
+	padding-left: 25px
 }
