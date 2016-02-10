@@ -16,7 +16,8 @@ var SingleSiteComponent = require( 'my-sites/themes/single-site' ),
 	trackScrollPage = require( 'lib/track-scroll-page' ),
 	getCurrentUser = require( 'state/current-user/selectors' ).getCurrentUser,
 	buildTitle = require( 'lib/screen-title/utils' ),
-	getAnalyticsData = require( './helpers' ).getAnalyticsData;
+	getAnalyticsData = require( './helpers' ).getAnalyticsData,
+	ClientSideEffects = require( './client-side-effects' );
 
 var controller = {
 
@@ -44,24 +45,32 @@ var controller = {
 			site_id
 		);
 
-		analytics.pageView.record( basePath, analyticsPageTitle );
+		const runClientAnalytics = function() {
+			analytics.pageView.record( basePath, analyticsPageTitle );
+		};
+
+		const boundTrackScrollPage = function() {
+			trackScrollPage(
+				basePath,
+				analyticsPageTitle,
+				'Themes'
+			);
+		};
+
 		ReactDom.render(
-			React.createElement( ReduxProvider, { store: context.store },
-				React.createElement( Head, { title, tier: tier || 'all' },
-					React.createElement( ThemesComponent, {
-						key: site_id,
-						siteId: site_id,
-						tier: tier,
-						search: context.query.s,
-						trackScrollPage: trackScrollPage.bind(
-							null,
-							basePath,
-							analyticsPageTitle,
-							'Themes'
-						)
-					} )
-				)
-			),
+			<ReduxProvider store={ context.store }>
+				<Head title={ title } tier={ tier || 'all' }>
+					<ThemesComponent
+						key={ site_id }
+						siteId={ site_id }
+						tier={ tier }
+						search={ context.query.s }
+						trackScrollPage={ boundTrackScrollPage } />
+					<ClientSideEffects>
+						{ runClientAnalytics }
+					</ClientSideEffects>
+				</Head>
+			</ReduxProvider>,
 			document.getElementById( 'primary' )
 		);
 	}
