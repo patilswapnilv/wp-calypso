@@ -142,20 +142,14 @@ Layout = React.createClass( {
 				'layout',
 				`is-section-${this.props.section}`,
 				`focus-${this.props.focus.getCurrent()}`,
-				{ 'is-support-user': this.props.isSupportUser }
+				{ 'is-support-user': this.props.isSupportUser },
+				{ 'has-no-sidebar': ! this.props.hasSidebar },
+				{ 'full-screen': this.props.isFullScreen }
 			),
 			loadingClass = classnames( {
 				layout__loader: true,
 				'is-active': this.props.isLoading
 			} );
-
-		if ( ! this.props.hasSidebar ) {
-			sectionClass += ' has-no-sidebar';
-		}
-
-		if ( this.props.isFullScreen ) {
-			sectionClass += ' full-screen';
-		}
 
 		return (
 			<div className={ sectionClass }>
