@@ -14,12 +14,16 @@ var config = require( 'config' ),
 const isLoggedIn = !! user.get();
 const routes = isLoggedIn
 	? {
-		'/design/*': [ controller.navigation, controller.siteSelection ],
-		'/design(/type/:tier)?': [ themesController.multiSite ],
-		'/design/:siteId(/type/:tier)?': [ themesController.singleSite ],
+		'/design*': [ controller.navigation, controller.siteSelection ],
+		'/design': [ themesController.multiSite, themesController.render ],
+		'/design/:siteId': [ themesController.singleSite, themesController.render ],
+		'/design/type/:tier': [ themesController.multiSite, themesController.render ],
+		'/design/type/:tier/:siteId': [ themesController.singleSite, themesController.render ],
+
 	}
 	: {
-		'/design(/type/:tier)?': [ themesController.loggedOut ]
+		'/design': [ themesController.loggedOut, themesController.render ],
+		'/design/type/:tier': [ themesController.loggedOut, themesController.render ]
 	};
 // TODO: Append 'themes/' routes that are the same for both logged in and out:
 //'themes': [ themesController.something ]
