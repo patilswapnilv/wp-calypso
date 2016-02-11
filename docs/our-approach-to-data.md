@@ -87,6 +87,7 @@ client/state/
     ├── actions.js
     ├── reducer.js
     ├── selectors.js
+    ├── schema.js
     ├── Makefile
     ├── README.md
     └── test/
@@ -271,3 +272,135 @@ By now, you're hopefully convinced that a global application state can enable us
 We recommend that you only use the state tree to store user interface state when you know that the data being stored should be persisted between page views, or when it's to be used by distinct areas of the application on the same page. As an example, consider the currently selected site. When navigating between pages in the [_My Sites_](https://wordpress.com/stats) section, I'd expect that the selected site should not change. Additionally, many parts of the rendered application make use of selected site. For these reasons, it makes sense that the currently selected site be saved in the global state. By contrast, when I navigate to the Sharing page and expand one of the available sharing services, I don't have the same expectation that this interaction be preserved when I later leave and return to the page. In these cases, it might be more appropriate to use React state to track the expanded status of the component, local only to the current rendering context. Use your best judgment when considering whether to add to the global state, but don't feel compelled to avoid React state altogether.
 
 Files related to user-interface state can be found in the [`client/state/ui` directory](../client/state/ui).
+
+### Data Persistence ( [#2754](https://github.com/Automattic/wp-calypso/pull/2754) )
+
+Persisting our Redux state to browser storage (localStorage/indexedDB) allows us to not completely rebuild global state 
+on each page load, and facilitates future offline cases.
+
+At a high level, implementing this is straightforward. We subscribe to any Redux store changes, and on change we update 
+our browser storage with the new state of the Redux tree. On page load, if we detect stored state in browser storage during 
+our initial render, we create our Redux store with that persisted initial state.
+ 
+However we quickly run into the following problems:
+
+#### Subtrees may contain class instances ( [#2757](https://github.com/Automattic/wp-calypso/pull/2757) )
+
+Some subtrees contain class instances. In some cases this is expected, as a few branches have chosen to use
+Immutable.js for performance reasons. However, attempting to serialize class instances will throw errors while saving 
+to our browser storage.
+
+#### Data shapes change over time ( [#3101](https://github.com/Automattic/wp-calypso/pull/3101) )
+
+As time passes, the shape of our data will change very drastically in our Redux store and in each subtree. If we now
+persist state, we run into the issue of our data shapes no longer matching. 
+
+As a developer, this case is extremely easy to hit. Imagine that Redux persistence is enabled and we are running master.
+Allow state to be persisted to the browser, then switch to another branch that has some minor refactors for an 
+existing sub-tree. Now, what happens when a selector reaches for a data property that doesn't exist, or has been renamed,
+or was moved someplace else? Errors, of course!
+
+A normal user can hit this case too, just by visiting our website and returning 2 weeks later.
+
+How can we tell that our persisted data is good to use as initial state?
+
+#### Solutions
+
+To work around these issues, we create two special actions: `SERIALIZE` and `DESERIALIZE`. These actions are not 
+dispatched, but we call the reducer directly to prepare state to be serialized to browser storage and deserialized for
+use as in memory initialState to our Redux store.
+
+The calls to do this, look similar to:
+
+```javascript
+reducer( reduxStore.getState(), { type: 'SERIALIZE' } )
+```
+
+and
+
+```javascript
+reducer( browserState, { type: 'DESERIALIZE' } )
+```
+
+The key idea is that in the reducer `SERIALIZE` should return a plain JS object. In a subtree that uses Immutable.js
+it should look something like this:
+```
+export default ( state = defaultState, action ) => {
+	switch ( action.type ) {
+		case RECEIVE_THEMES:
+		//...
+		case SERIALIZE:
+			return state.toJS();
+} );
+```
+
+While `DESERIALIZE` should return what the subtree expects. In a subtree that uses Immutable.js it should look something 
+like this:
+```
+export default ( state = defaultState, action ) => {
+	switch ( action.type ) {
+		case RECEIVE_THEMES:
+		//...
+		case DESERIALIZE:
+			return fromJS( state );
+} );
+```
+If the subtree uses plain JS objects, we simply return state.
+
+You may have noticed that if we leave `DESERIALIZE` as is, we will run into problems with data shapes changing over time.
+
+To work around this, we add a json schema `schema.js` to match each reducer. This schema describes what 
+sort of object we expect to be stored in that subtree, which properties must be required, and what additional properties
+they might contain.
+
+The contents of schema.js might look similar to:
+```javascript
+export default {
+	type: 'object',
+	patternProperties: {
+		'^\\d+$': {
+			type: 'object',
+			required: [ 'ID', 'name' ],
+			properties: {
+				ID: { type: 'number' },
+				name: { type: 'string' },
+				description: { type: 'string' },
+		}
+	},
+	additionalProperties: false
+};
+```
+
+If our persisted data doesn't match, we should throw it out and rebuild that section of the tree with our default state.
+
+Like so:
+```
+export default ( state = defaultState, action ) => {
+	switch ( action.type ) {
+		case RECEIVE_THEMES:
+		//...
+		case DESERIALIZE:
+			return isValidStateWithSchema( state, schema ) ? fromJS( state ) : defaultState;
+} );
+```
+
+Some subtrees may choose to never persist data. One such example of this is our online connection state. If we persist
+our connection state, we might not be able to tell when we're offline or online.
+
+To not persist state, return default state for both `SERIALIZE` and `DESERIALIZE`. In this example, it happens to be 'CHECKING'
+```
+export default ( state = 'CHECKING', action ) => {
+	switch ( action.type ) {
+		case CONNECTION_LOST:
+			return 'OFFLINE';
+		case CONNECTION_RESTORED:
+			return 'ONLINE';
+		case SERIALIZE:
+			return 'CHECKING';
+		case DESERIALIZE:
+			return 'CHECKING';
+} );
+```
+
+When Redux persistence is enabled, all subtrees must implement SERIALIZE and DESERIALIZE to avoid data shape changes and
+a json schema should be added, if the subtree chooses to persist state.
