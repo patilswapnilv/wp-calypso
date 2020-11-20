@@ -7,8 +7,13 @@ import type { ResponseCart } from '@automattic/shopping-cart';
  * Internal dependencies
  */
 import type { ContactDetailsType } from '../types/contact-details';
-import { hasDomainRegistration, hasTransferProduct } from 'calypso/lib/cart-values/cart-items';
+import {
+	hasDomainRegistration,
+	hasTransferProduct,
+	hasOnlyRenewalItems,
+} from 'calypso/lib/cart-values/cart-items';
 import { isGSuiteProductSlug } from 'calypso/lib/gsuite';
+import doesPurchaseHaveFullCredits from './does-purchase-have-full-credits';
 
 export default function getContactDetailsType( responseCart: ResponseCart ): ContactDetailsType {
 	const hasDomainProduct =
@@ -16,17 +21,15 @@ export default function getContactDetailsType( responseCart: ResponseCart ): Con
 	const hasNewGSuite = responseCart.products.some(
 		( product ) => isGSuiteProductSlug( product.product_slug ) // Do not show the G Suite form for extra licenses
 	);
+	const isOnlyRenewals = hasOnlyRenewalItems( responseCart );
 	const isPurchaseFree = responseCart.total_cost_integer === 0;
-	const isFullCredits =
-		! isPurchaseFree &&
-		responseCart.credits_integer > 0 &&
-		responseCart.credits_integer >= responseCart.sub_total_integer;
+	const isFullCredits = doesPurchaseHaveFullCredits( responseCart );
 
-	if ( hasDomainProduct ) {
+	if ( hasDomainProduct && ! isOnlyRenewals ) {
 		return 'domain';
 	}
 
-	if ( hasNewGSuite ) {
+	if ( hasNewGSuite && ! isOnlyRenewals ) {
 		return 'gsuite';
 	}
 

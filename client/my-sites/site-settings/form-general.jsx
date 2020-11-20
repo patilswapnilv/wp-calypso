@@ -18,7 +18,7 @@ import NoticeAction from 'calypso/components/notice/notice-action';
 import LanguagePicker from 'calypso/components/language-picker';
 import SettingsSectionHeader from 'calypso/my-sites/site-settings/settings-section-header';
 import config from 'calypso/config';
-import { languages } from 'calypso/languages';
+import languages from '@automattic/languages';
 import FormInput from 'calypso/components/forms/form-text-input';
 import FormFieldset from 'calypso/components/forms/form-fieldset';
 import FormLabel from 'calypso/components/forms/form-label';
@@ -150,8 +150,8 @@ export class SiteSettingsFormGeneral extends Component {
 
 	blogAddress() {
 		const { site, siteIsJetpack, siteSlug, translate, isWPForTeamsSite } = this.props;
-		let customAddress = '',
-			addressDescription = '';
+		let customAddress = '';
+		let addressDescription = '';
 
 		if ( ! site || siteIsJetpack || isWPForTeamsSite ) {
 			return null;
@@ -418,12 +418,15 @@ export class SiteSettingsFormGeneral extends Component {
 			siteIsAtomic,
 			translate,
 		} = this.props;
-		const blogPublic = parseInt( fields.blog_public, 10 );
 
+		const blogPublic = parseInt( fields.blog_public, 10 );
 		const wpcomComingSoon = 1 === parseInt( fields.wpcom_coming_soon, 10 );
 		const wpcomPublicComingSoon = 1 === parseInt( fields.wpcom_public_coming_soon, 10 );
-
+		// isPrivateAndUnlaunched means it is an unlaunched coming soon v1 site
+		const isPrivateAndUnlaunched = -1 === blogPublic && this.props.isUnlaunchedSite;
 		const isNonAtomicJetpackSite = siteIsJetpack && ! siteIsAtomic;
+		const isAnyComingSoonEnabled =
+			( 0 === blogPublic && wpcomPublicComingSoon ) || isPrivateAndUnlaunched || wpcomComingSoon;
 
 		return (
 			<FormFieldset>
@@ -433,10 +436,7 @@ export class SiteSettingsFormGeneral extends Component {
 							<FormRadio
 								name="blog_public"
 								value="0"
-								checked={
-									( 0 === blogPublic && wpcomPublicComingSoon ) ||
-									( -1 === blogPublic && wpcomComingSoon )
-								}
+								checked={ isAnyComingSoonEnabled }
 								onChange={ () =>
 									this.handleVisibilityOptionChange( {
 										blog_public: 0,
@@ -506,7 +506,7 @@ export class SiteSettingsFormGeneral extends Component {
 							<FormRadio
 								name="blog_public"
 								value="-1"
-								checked={ -1 === blogPublic && ! wpcomComingSoon }
+								checked={ -1 === blogPublic && ! wpcomComingSoon && ! isPrivateAndUnlaunched }
 								onChange={ () =>
 									this.handleVisibilityOptionChange( {
 										blog_public: -1,
@@ -586,13 +586,22 @@ export class SiteSettingsFormGeneral extends Component {
 	}
 
 	renderLaunchSite() {
-		const { translate, siteDomains, siteSlug, siteId, isPaidPlan, isComingSoon } = this.props;
+		const {
+			translate,
+			siteDomains,
+			siteSlug,
+			siteId,
+			isPaidPlan,
+			isComingSoon,
+			fields,
+		} = this.props;
 
 		const launchSiteClasses = classNames( 'site-settings__general-settings-launch-site-button', {
 			'site-settings__disable-privacy-settings': ! siteDomains.length,
 		} );
 		const btnText = translate( 'Launch site' );
-		let querySiteDomainsComponent, btnComponent;
+		let querySiteDomainsComponent;
+		let btnComponent;
 
 		if ( 0 === siteDomains.length ) {
 			querySiteDomainsComponent = <QuerySiteDomains siteId={ siteId } />;
@@ -607,13 +616,17 @@ export class SiteSettingsFormGeneral extends Component {
 			querySiteDomainsComponent = '';
 		}
 
+		const blogPublic = parseInt( fields.blog_public, 10 );
+		// isPrivateAndUnlaunched means it is an unlaunched coming soon v1 site
+		const isPrivateAndUnlaunched = -1 === blogPublic && this.props.isUnlaunchedSite;
+
 		return (
 			<>
 				<SettingsSectionHeader title={ translate( 'Launch site' ) } />
 				<Card className="site-settings__general-settings-launch-site">
 					<div className="site-settings__general-settings-launch-site-text">
 						<p>
-							{ isComingSoon
+							{ isComingSoon || isPrivateAndUnlaunched
 								? translate(
 										'Your site hasn\'t been launched yet. It is hidden from visitors behind a "Coming Soon" notice until it is launched.'
 								  )

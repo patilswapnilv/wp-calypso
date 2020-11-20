@@ -8,7 +8,7 @@ import { useTranslate } from 'i18n-calypso';
 /**
  * Internal dependencies
  */
-import { Card } from '@automattic/components';
+import { Button, Card } from '@automattic/components';
 import {
 	getListByOwnerAndSlug,
 	getListItems,
@@ -27,9 +27,12 @@ import { createReaderList, updateReaderList } from 'calypso/state/reader/lists/a
 import ReaderExportButton from 'calypso/blocks/reader-export-button';
 import { READER_EXPORT_TYPE_LIST } from 'calypso/blocks/reader-export-button/constants';
 import Missing from 'calypso/reader/list-stream/missing';
+import ItemAdder from './item-adder';
 import ListDelete from './list-delete';
 import ListForm from './list-form';
 import ListItem from './list-item';
+import EmptyContent from 'calypso/components/empty-content';
+import { preventWidows } from 'calypso/lib/formatting';
 
 /**
  * Style dependencies
@@ -54,9 +57,30 @@ function Items( { list, listItems, owner } ) {
 	if ( ! listItems ) {
 		return <Card>{ translate( 'Loading…' ) }</Card>;
 	}
-	return listItems.map( ( item ) => (
-		<ListItem key={ item.ID } owner={ owner } list={ list } item={ item } />
-	) );
+	return (
+		<>
+			{ listItems?.length > 0 && (
+				<>
+					<h1 className="list-manage__subscriptions-header">
+						{ translate( 'Added sites' ) }
+						<Button compact primary href="#reader-list-item-adder">
+							{ translate( 'Add Site' ) }
+						</Button>
+					</h1>
+					{ listItems.map( ( item ) => (
+						<ListItem
+							key={ item.feed_ID || item.site_ID || item.tag_ID }
+							owner={ owner }
+							list={ list }
+							item={ item }
+						/>
+					) ) }
+					<hr className="list-manage__subscriptions-separator" />
+				</>
+			) }
+			<ItemAdder key="item-adder" list={ list } listItems={ listItems } owner={ owner } />
+		</>
+	);
 }
 
 function Export( { list, listItems } ) {
@@ -104,8 +128,18 @@ function ReaderListEdit( props ) {
 	const listItems = useSelector( ( state ) =>
 		list ? getListItems( state, list.ID ) : undefined
 	);
-
 	const sectionProps = { ...props, list, listItems };
+
+	// Only the list owner can manage the list
+	if ( list && ! list.is_owner ) {
+		return (
+			<EmptyContent
+				title={ preventWidows( translate( "You don't have permission to manage this list." ) ) }
+				illustration="/calypso/images/illustrations/error.svg"
+			/>
+		);
+	}
+
 	return (
 		<>
 			{ ! list && <QueryReaderList owner={ props.owner } slug={ props.slug } /> }

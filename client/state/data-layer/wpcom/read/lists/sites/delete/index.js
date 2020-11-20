@@ -26,10 +26,11 @@ registerHandlers( 'state/data-layer/wpcom/read/lists/sites/delete/index.js', {
 					},
 					action
 				),
-			onSuccess: successNotice( translate( 'Site removed from list successfully.' ), {
-				duration: DEFAULT_NOTICE_DURATION,
-			} ),
-			onError: () => errorNotice( translate( 'Unable to remove site from list' ) ),
+			onSuccess: () =>
+				successNotice( translate( 'Site removed from list successfully.' ), {
+					duration: DEFAULT_NOTICE_DURATION,
+				} ),
+			onError: () => errorNotice( translate( 'Unable to remove site from list.' ) ),
 		} ),
 	],
 } );
